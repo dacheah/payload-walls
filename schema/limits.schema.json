@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dacheah/llm-request-budgets/schema/limits.schema.json",
+  "title": "limits.json",
+  "description": "Measured request-size ceilings for LLM APIs, with the vendor documentation compared. Measured fields are derived from data/*.jsonl by tools/build_limits.py; documented fields are curated quotes with URLs and retrieval dates.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "scope",
+    "conventions",
+    "row_count",
+    "providers",
+    "data_files"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "generated_from": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "row_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "unmapped_source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "measured_window",
+        "method",
+        "conventions"
+      ],
+      "properties": {
+        "measured_window": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "conventions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "conventions": {
+      "type": "object",
+      "required": [
+        "size_unit",
+        "bracket",
+        "no_cap_means"
+      ],
+      "properties": {
+        "size_unit": {
+          "type": "string"
+        },
+        "measured_field": {
+          "type": "string"
+        },
+        "bracket": {
+          "type": "string"
+        },
+        "no_cap_means": {
+          "type": "string"
+        },
+        "cap_stated_in_error": {
+          "type": "string"
+        }
+      }
+    },
+    "providers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "confidence",
+          "measured",
+          "documented",
+          "caps",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "host": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "wire": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "model_tested": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "measured_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "binding_constraint": {
+            "type": "string"
+          },
+          "confidence": {
+            "enum": [
+              "measured",
+              "documented",
+              "unmeasured"
+            ]
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": [
+              "array",
+              "string"
+            ]
+          },
+          "caps": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "documented": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "measured": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "rows": {
+                "type": "integer"
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "largest_accepted": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": true
+              },
+              "walls": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                }
+              },
+              "non_cap_failures": {
+                "type": "object"
+              },
+              "no_image_accepted": {
+                "type": "boolean"
+              },
+              "most_images_accepted": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "non_wall_failures": {
+                "type": "object"
+              }
+            }
+          },
+          "evidence": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "data_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

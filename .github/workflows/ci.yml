@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # limits.json and docs/table.md must be reproducible from data/ - fail if they drifted
+      - name: Rebuild limits.json from the raw logs and diff
+        run: python3 tools/build_limits.py --check
+
+      - name: limits.json validates against the schema
+        run: |
+          pip install --quiet jsonschema
+          python3 - <<'PY'
+          import json, jsonschema
+          schema = json.load(open("schema/limits.schema.json"))
+          doc = json.load(open("limits.json"))
+          jsonschema.validate(doc, schema)
+          print(f"schema ok: {len(doc['providers'])} providers, {doc['row_count']} probe rows")
+          PY
+
+      - name: No credential-looking strings in the tree
+        run: |
+          if grep -rInE '(sk-proj-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|sk-ws-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,})' \
+               --exclude-dir=.git . ; then
+            echo "::error::a credential-shaped string is committed"; exit 1
+          fi
+          echo "no credential-shaped strings"
+
+      - name: budget_check smoke test
+        run: |
+          python3 tools/budget_check.py --list
+          python3 tools/budget_check.py --provider fireworks --images 61 --image-bytes 1048576 \
+            && { echo "::error::expected a rejection verdict at 61 images"; exit 1; } || true

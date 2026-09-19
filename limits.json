@@ -1,0 +1,2099 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-09-19T11:56:24+00:00",
+  "scope": {
+    "measured_window": "2026-09-15 to 2026-09-19",
+    "method": "count ladder with tiny images first, then single-image climb, then squeeze-to-exact; JSON body bytes",
+    "conventions": [
+      "Sizes are JSON request-body bytes, reported in binary units (MiB = 1024^2).",
+      "A bracket is written 'largest accepted - first failure'; it is not a precise cap unless the squeeze run resolved one.",
+      "A row with no byte wall found is a LOWER BOUND on that host, never 'unlimited'.",
+      "'largest accepted' means HTTP 200 with max_tokens=1, one model per host, one region, one key tier.",
+      "Structural caps (item counts, token budgets) bind before bytes on several hosts; the byte wall is then unreachable rather than absent."
+    ]
+  },
+  "conventions": {
+    "size_unit": "JSON request-body bytes, reported in binary MiB (1 MiB = 1,048,576 B)",
+    "measured_field": "measured.largest_accepted.body_bytes is HTTP 200 evidence; measured.walls.<wall>.body_bytes is the first rejection of that kind",
+    "bracket": "largest accepted - first failure; only exact where the squeeze run resolved it",
+    "no_cap_means": "the ladder reached a structural cap (item count, token budget) before any byte wall, so the byte ceiling is a LOWER BOUND, never 'unlimited'",
+    "cap_stated_in_error": "the number the vendor's own error message asserted, when it asserts one"
+  },
+  "row_count": 540,
+  "data_files": [
+    "probe_codex.jsonl",
+    "probe_openai_limits.jsonl",
+    "probe_results.jsonl",
+    "probe_round5_anthropic.jsonl",
+    "probe_round5_anthropic_refine.jsonl",
+    "probe_round5_deepseek.jsonl",
+    "probe_round5_fireworks-60.jsonl",
+    "probe_round5_fireworks-60big.jsonl",
+    "probe_round5_fireworks-count.jsonl",
+    "probe_round5_gemini-count.jsonl",
+    "probe_round5_gemini-lite.jsonl",
+    "probe_round5_gemini-tok.jsonl",
+    "probe_round5_gemini.jsonl",
+    "probe_round5_geminilite.jsonl",
+    "probe_round5_openai_41mini.jsonl",
+    "probe_round5_qwencloud-250.jsonl",
+    "probe_round5_qwencloud-count.jsonl",
+    "probe_round5_qwencloud.jsonl",
+    "probe_round5_squeeze.jsonl"
+  ],
+  "generated_from": [
+    "probe_codex.jsonl",
+    "probe_openai_limits.jsonl",
+    "probe_results.jsonl",
+    "probe_round5_anthropic.jsonl",
+    "probe_round5_anthropic_refine.jsonl",
+    "probe_round5_deepseek.jsonl",
+    "probe_round5_fireworks-60.jsonl",
+    "probe_round5_fireworks-60big.jsonl",
+    "probe_round5_fireworks-count.jsonl",
+    "probe_round5_gemini-count.jsonl",
+    "probe_round5_gemini-lite.jsonl",
+    "probe_round5_gemini-tok.jsonl",
+    "probe_round5_gemini.jsonl",
+    "probe_round5_geminilite.jsonl",
+    "probe_round5_openai_41mini.jsonl",
+    "probe_round5_qwencloud-250.jsonl",
+    "probe_round5_qwencloud-count.jsonl",
+    "probe_round5_qwencloud.jsonl",
+    "probe_round5_squeeze.jsonl"
+  ],
+  "providers": [
+    {
+      "id": "openai",
+      "provider": "OpenAI",
+      "host": "api.openai.com",
+      "wire": "openai",
+      "model_tested": "gpt-4.1-mini",
+      "measured_at": "2026-09-18",
+      "binding_constraint": "total_image_bytes_budget",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null,
+        "budget_note": "50 MB applied to OpenAI's own normalised (downscaled) copy of the images, not to the bytes sent",
+        "per_item_bytes_evidence": "no per-image cap found to 50.7 MB (single image accepted)"
+      },
+      "documented": {
+        "current": {
+          "text": "Request size: Up to 512 MB total payload per request. Image count: Up to 1,500 images per request.",
+          "url": "https://developers.openai.com/api/docs/guides/images-vision",
+          "retrieved": "2026-09-19"
+        },
+        "archived": [
+          {
+            "text": "Size limits: Up to 50 MB total payload size per request - Up to 500 individual image inputs per request",
+            "url": "http://web.archive.org/web/20260305204402/https://developers.openai.com/api/docs/guides/images-vision",
+            "captured": "2026-03-05"
+          }
+        ],
+        "delta": "The current doc's 512 MB is unreachable: the API rejects at a 50 MB image-byte budget. The rule enforced today is the one the vendor deleted from this page between 2026-04-19 and 2026-04-24. See docs/findings.md."
+      },
+      "notes": "Two payload shapes probed. (a) many-small: 17 x 2,053,887 B accepted, 18 rejected at 400 'Total image size is 50.56MB, which exceeds the allowed limit of 50MB.' (b) few-large: 8 x 12,144,448 B accepted (raw 97,155,560 B, body 129,541,440 B) - a 3.5x larger payload than the rejected small-image one. Rejection is HTTP 400, not 413.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 129541440,
+          "status": 200,
+          "class": "ok",
+          "error": "{ \"id\": \"chatcmpl-EPQn4DEfAR5mfzn27d4UNDJLZPlXY\", \"object\": \"chat.completion\", \"created\": 1789729890, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+          "images": 8,
+          "model": "gpt-4.1-mini"
+        },
+        "walls": {
+          "image_total": {
+            "body_bytes": 49294630,
+            "status": 400,
+            "class": "image_total_cap",
+            "error": "{ \"error\": { \"message\": \"Total image size is 50.56MB, which exceeds the allowed limit of 50MB.\", \"type\": \"invalid_request_error\", \"param\": \"messages\", \"code\": null } }",
+            "cap_stated_in_error": 52428800,
+            "images": 18,
+            "model": "gpt-4.1-mini"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "openai_41mini",
+          "rows": 17,
+          "files": [
+            "probe_round5_openai_41mini.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 63789772,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQNj0NL0VpUo4EEhBnmfObZW30aZ\", \"object\": \"chat.completion\", \"created\": 1789728319, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 12,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 63789772,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQNj0NL0VpUo4EEhBnmfObZW30aZ\", \"object\": \"chat.completion\", \"created\": 1789728319, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 12,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {
+            "image_total_cap": {
+              "body_bytes": 85060472,
+              "status": 400,
+              "class": "image_total_cap",
+              "error": "{ \"error\": { \"message\": \"Total image size is 64.05MB, which exceeds the allowed limit of 50MB.\", \"type\": \"invalid_request_error\", \"param\": \"messages\", \"code\": null } }",
+              "cap_stated_in_error": 52428800,
+              "images": 16,
+              "model": "gpt-4.1-mini"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "openai",
+          "rows": 2,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": null,
+          "most_images_accepted": null,
+          "walls": {},
+          "non_wall_failures": {
+            "rate_limit": 2
+          }
+        },
+        {
+          "source_id": "total",
+          "rows": 20,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": null,
+          "most_images_accepted": null,
+          "walls": {
+            "image_total_cap": {
+              "body_bytes": 60226346,
+              "status": 400,
+              "class": "image_total_cap",
+              "error": "{ \"error\": { \"message\": \"Total image size is 61.75MB, which exceeds the allowed limit of 50MB.\", \"type\": \"invalid_request_error\", \"param\": \"messages\", \"code\": null } }",
+              "cap_stated_in_error": 52428800,
+              "images": 22,
+              "model": "gpt-4.1-mini"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "count",
+          "rows": 12,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 4396436,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQaheBlnCYwqeyoNpGJyQUT4OmSK\", \"object\": \"chat.completion\", \"created\": 1789729123, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 100,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 4296036,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQREp4k8IWFqiW9upXsvLj4BWZWi\", \"object\": \"chat.completion\", \"created\": 1789728536, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 100,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "single",
+          "rows": 14,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 67619247,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQljuMZrNUttPtVekMFBRF1GOjuU\", \"object\": \"chat.completion\", \"created\": 1789729807, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 1,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 51765527,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQRbERMtgV2T4FKnMDWr8cY7OgEF\", \"object\": \"chat.completion\", \"created\": 1789728559, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 1,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "single_hi",
+          "rows": 3,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 67622675,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQi5yJgfujHuYcsl8ayBzJCZPg6f\", \"object\": \"chat.completion\", \"created\": 1789729581, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 1,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 67616263,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQh1Zyt3SOM1kwLLjwsrRIDHlvba\", \"object\": \"chat.completion\", \"created\": 1789729515, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 1,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "bracket",
+          "rows": 4,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 46556047,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQc8Av3R48xIsJY30VLsUWnAIMO2\", \"object\": \"chat.completion\", \"created\": 1789729212, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 17,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 46556047,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQc8Av3R48xIsJY30VLsUWnAIMO2\", \"object\": \"chat.completion\", \"created\": 1789729212, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 17,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {
+            "image_total_cap": {
+              "body_bytes": 49294630,
+              "status": 400,
+              "class": "image_total_cap",
+              "error": "{ \"error\": { \"message\": \"Total image size is 50.56MB, which exceeds the allowed limit of 50MB.\", \"type\": \"invalid_request_error\", \"param\": \"messages\", \"code\": null } }",
+              "cap_stated_in_error": 52428800,
+              "images": 18,
+              "model": "gpt-4.1-mini"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "pair",
+          "rows": 2,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 82531158,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQitN9hwWlJO4Sw1PyUgJYdaC43g\", \"object\": \"chat.completion\", \"created\": 1789729631, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 2,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 68730358,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQiR3cmRmss86YZEdsR1poFfMAo2\", \"object\": \"chat.completion\", \"created\": 1789729603, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 2,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "large",
+          "rows": 4,
+          "files": [
+            "probe_openai_limits.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 129541440,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQn4DEfAR5mfzn27d4UNDJLZPlXY\", \"object\": \"chat.completion\", \"created\": 1789729890, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 8,
+            "model": "gpt-4.1-mini"
+          },
+          "most_images_accepted": {
+            "body_bytes": 129541440,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"id\": \"chatcmpl-EPQn4DEfAR5mfzn27d4UNDJLZPlXY\", \"object\": \"chat.completion\", \"created\": 1789729890, \"model\": \"gpt-4.1-mini-2025-04-14\", \"choices\": [ { \"index\": 0, \"message\": { \"role\": \"assistant\", \"content\": \"ok\", \"refusal\": null, \"annota...",
+            "images": 8,
+            "model": "gpt-4.1-mini"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        }
+      ]
+    },
+    {
+      "id": "alibaba",
+      "provider": "Alibaba Cloud Model Studio (DashScope international)",
+      "host": "dashscope-intl.aliyuncs.com",
+      "wire": "openai",
+      "model_tested": "qwen3.8-flash",
+      "measured_at": "2026-09-19",
+      "binding_constraint": "items_per_request",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": 20971520,
+        "max_items": 250,
+        "body_note": "537,173,033 B (512 MiB) accepted - 8x the documented 64 MiB body ceiling"
+      },
+      "documented": {
+        "current": {
+          "text": "Requests without Base64: body max 16 MiB. Requests with Base64 (Anthropic protocol): single Base64 item max 32 MiB. Requests with Base64 (other protocols): single Base64 item max 20 MiB. Requests with Base64 (whole body): max 64 MiB. After server-side decoding the whole body must still not exceed 16 MiB; exceeding the limit is rejected by the gateway with HTTP 413.",
+          "url": "https://help.aliyun.com/zh/model-studio/rate-limit",
+          "retrieved": "2026-09-19",
+          "language": "zh-CN"
+        },
+        "variant": [
+          {
+            "text": "Exceeded limit on max bytes per data-uri item : 10485760",
+            "url": "https://help.aliyun.com/zh/model-studio/error-code",
+            "note": "error-code page states 10,485,760 (10 MiB) per data-URI item; the rate-limit page states 20 MiB for the same wire protocol, and enforcement measured 20,971,520 B exactly"
+          },
+          {
+            "text": "Base64 encoding increases data size. The original file size must be less than 7 MB.",
+            "url": "https://www.alibabacloud.com/help/en/model-studio/vision",
+            "note": "vision page states a 7 MB image rule; the enforced per-item ceiling is 20 MiB"
+          }
+        ],
+        "delta": "Body: 512 MiB accepted against a documented 64 MiB cap and a promised HTTP 413 - the rejection actually returned HTTP 400. Per-item: 20,971,520 B enforced, matching the rate-limit page for 'other protocols' while the error-code page still says 10,485,760. The vendor's own two pages disagree."
+      },
+      "notes": "200 items / 267,075,137 B body accepted. The 250-item bracket completed: 400 'Exceeded limit on max data-uri per request: 250'. Free-tier credit was exhausted during the final rung, so the last rung is structural-cap evidence, not a byte measurement.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 537173033,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word response: \\\"ok\\\". The infinite space of possible replies collapses to exactly that token. No analysis needed beyond ho...",
+          "images": 96
+        },
+        "walls": {
+          "item_bytes": {
+            "body_bytes": 21244312,
+            "status": 400,
+            "class": "item_bytes_cap",
+            "error": "{\"error\":{\"message\":\"Exceeded limit on max bytes per data-uri item : 20971520\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"057ce76b-0f09-96c6-af73-01ac38bc6cbf\"}",
+            "cap_stated_in_error": 20971520,
+            "images": 1,
+            "model": "qwen3.8-flash"
+          },
+          "item_count": {
+            "status": 400,
+            "class": "item_count_cap",
+            "error": "{\"error\":{\"message\":\"Exceeded limit on max data-uri per request: 250\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"5af24614-6846-9092-9a4b-07cd650adcb9\"}",
+            "cap_stated_in_error": 250,
+            "images": 512,
+            "model": "qwen3.8-flash"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "alibaba",
+          "rows": 24,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 16905552,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word response: \\\"ok\\\". The image is just noise/static, irrelevant to the instruction. I need to compl",
+            "model": "qwen3.8-flash"
+          },
+          "most_images_accepted": {
+            "body_bytes": 112,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"We need answer to user: \\\"Reply with the single word ok.\\\" Need final only ok. Ensure no extra punctuation? single word ok. Cou",
+            "images": 0,
+            "model": "qwen3.8-flash"
+          },
+          "walls": {
+            "item_bytes_cap": {
+              "body_bytes": 31878388,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"error\":{\"message\":\"String value length (28049408) exceeds the maximum allowed (28000000, from `StreamReadConstraints.getMaxStringLength()`)\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"313ec7",
+              "cap_stated_in_error": 28000000,
+              "model": "qwen3.8-flash"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "qwencloud",
+          "rows": 21,
+          "files": [
+            "probe_round5_qwencloud.jsonl",
+            "probe_round5_squeeze.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 537173033,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word response: \\\"ok\\\". The infinite space of possible replies collapses to exactly that token. No analysis needed beyond ho...",
+            "images": 96
+          },
+          "most_images_accepted": {
+            "body_bytes": 537173033,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word response: \\\"ok\\\". The infinite space of possible replies collapses to exactly that token. No analysis needed beyond ho...",
+            "images": 96
+          },
+          "walls": {
+            "item_bytes_cap": {
+              "body_bytes": 21245064,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"error\":{\"message\":\"Exceeded limit on max bytes per data-uri item : 20971520\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"b2b32052-031b-9f64-af9c-4c4d55c75759\"}",
+              "cap_stated_in_error": 20971520,
+              "images": 1,
+              "model": "qwen3.8-flash"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "qwencloud-count",
+          "rows": 11,
+          "files": [
+            "probe_round5_qwencloud-count.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 15942508,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word reply: \\\"ok\\\". The image is just noise/static, irrelevant to the instruction. The constraint is strict: reply with t...",
+            "images": 1,
+            "model": "qwen3.8-flash"
+          },
+          "most_images_accepted": {
+            "body_bytes": 83928,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"We need to respond to user: \\\"Reply with the single word ok.\\\" Need final only \\\"ok\\\". Ensure single word. No extra.\",\"role\":\"assistant\"}}],\"crea...",
+            "images": 1,
+            "model": "qwen3.8-flash"
+          },
+          "walls": {
+            "item_bytes_cap": {
+              "body_bytes": 21247356,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"error\":{\"message\":\"Exceeded limit on max bytes per data-uri item : 20971520\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"79795076-54e1-9a02-85a6-dccf56dd47e7\"}",
+              "cap_stated_in_error": 20971520,
+              "images": 1,
+              "model": "qwen3.8-flash"
+            },
+            "item_count_cap": {
+              "status": 400,
+              "class": "item_count_cap",
+              "error": "{\"error\":{\"message\":\"Exceeded limit on max data-uri per request: 250\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"5af24614-6846-9092-9a4b-07cd650adcb9\"}",
+              "cap_stated_in_error": 250,
+              "images": 512,
+              "model": "qwen3.8-flash"
+            }
+          },
+          "non_wall_failures": {
+            "client_error": 1
+          }
+        },
+        {
+          "source_id": "qwencloud-250",
+          "rows": 12,
+          "files": [
+            "probe_round5_qwencloud-250.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 267075137,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word reply: \\\"ok\\\". The images are just noise, irrelevant to the instruction. The constraint is clear and absolute: reply...",
+            "images": 200,
+            "model": "qwen3.8-flash"
+          },
+          "most_images_accepted": {
+            "body_bytes": 267075137,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"ok\",\"reasoning_content\":\"The user wants a single word reply: \\\"ok\\\". The images are just noise, irrelevant to the instruction. The constraint is clear and absolute: reply...",
+            "images": 200,
+            "model": "qwen3.8-flash"
+          },
+          "walls": {
+            "item_bytes_cap": {
+              "body_bytes": 21244312,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"error\":{\"message\":\"Exceeded limit on max bytes per data-uri item : 20971520\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null},\"request_id\":\"057ce76b-0f09-96c6-af73-01ac38bc6cbf\"}",
+              "cap_stated_in_error": 20971520,
+              "images": 1,
+              "model": "qwen3.8-flash"
+            }
+          },
+          "non_wall_failures": {
+            "auth": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "gemini",
+      "provider": "Google Gemini API (AI Studio)",
+      "host": "generativelanguage.googleapis.com",
+      "wire": "gemini",
+      "model_tested": "gemini-3.5-flash-lite",
+      "measured_at": "2026-09-19",
+      "binding_constraint": "input_tokens",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null,
+        "token_budget": 1048576,
+        "tokens_per_image": {
+          "32 KiB image": 1089,
+          "note": "512 tiny images -> 557,576 prompt tokens (1,089/image); 700 -> 762,308; 900 -> 980,108; 950 -> 1,034,558 accepted; 1,024 -> 400 'The input token count exceeds the maximum number of tokens allowed 1048576.'"
+        }
+      },
+      "documented": {
+        "current": {
+          "text": "Inline data: 100 MB per request or payload (50 MB for PDFs). File API upload: 2 GB per file, up to 20 GB per project.",
+          "url": "https://ai.google.dev/gemini-api/docs/file-input-methods",
+          "retrieved": "2026-09-19",
+          "page_last_updated": "2026-07-30"
+        },
+        "delta": "324 MiB (340,234,555 B) accepted inline - 3.4x the documented 100 MB inline ceiling. The binding constraint at small image sizes is the 1,048,576-token input budget (~963 images at 32 KiB), not bytes; larger images carry more bytes per token, so the byte ceiling rises with image size. Documented figure is a floor, not a wall."
+      },
+      "notes": "Earlier apparent ceilings on this host were per-model quota (429) and transient 503 ('high demand'), not payload size - retries resolved both. No byte cap found to 324 MiB.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 340234555,
+          "status": 200,
+          "class": "ok",
+          "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 69704, \"totalTokenCount\": 69704, \"promptTokensDetails\": [ { \"modality\": \"I...",
+          "images": 64,
+          "model": "gemini-3.5-flash-lite"
+        },
+        "walls": {
+          "tokens": {
+            "body_bytes": 42847355,
+            "status": 400,
+            "class": "token_cap",
+            "error": "{ \"error\": { \"code\": 400, \"message\": \"The input token count exceeds the maximum number of tokens allowed 1048576.\", \"status\": \"INVALID_ARGUMENT\" } }",
+            "images": 1024,
+            "model": "gemini-3.5-flash-lite"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "gemini",
+          "rows": 30,
+          "files": [
+            "probe_round5_gemini.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42512454,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 1097, \"totalTokenCount\": 1097, \"promptTokensDetails\": [ { \"modality\": \"IMA...",
+            "images": 1,
+            "model": "gemini-3.5-flash"
+          },
+          "most_images_accepted": {
+            "body_bytes": 42474931,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 8720, \"totalTokenCount\": 8720, \"promptTokensDetails\": [ { \"modality\": \"IMA...",
+            "images": 8,
+            "model": "gemini-3.5-flash"
+          },
+          "walls": {},
+          "non_wall_failures": {
+            "proxy": 6,
+            "rate_limit": 6
+          }
+        },
+        {
+          "source_id": "gemini-lite",
+          "rows": 16,
+          "files": [
+            "probe_round5_gemini-lite.jsonl",
+            "probe_round5_geminilite.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 340234555,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 69704, \"totalTokenCount\": 69704, \"promptTokensDetails\": [ { \"modality\": \"I...",
+            "images": 64,
+            "model": "gemini-3.5-flash-lite"
+          },
+          "most_images_accepted": {
+            "body_bytes": 340234555,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 69704, \"totalTokenCount\": 69704, \"promptTokensDetails\": [ { \"modality\": \"I...",
+            "images": 64,
+            "model": "gemini-3.5-flash-lite"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "gemini-count",
+          "rows": 13,
+          "files": [
+            "probe_round5_gemini-count.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42514946,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 1097, \"totalTokenCount\": 1097, \"promptTokensDetails\": [ { \"modality\": \"TEX...",
+            "images": 1,
+            "model": "gemini-3.5-flash-lite"
+          },
+          "most_images_accepted": {
+            "body_bytes": 21403259,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 557576, \"totalTokenCount\": 557576, \"promptTokensDetails\": [ { \"modality\": ...",
+            "images": 512,
+            "model": "gemini-3.5-flash-lite"
+          },
+          "walls": {
+            "token_cap": {
+              "body_bytes": 42847355,
+              "status": 400,
+              "class": "token_cap",
+              "error": "{ \"error\": { \"code\": 400, \"message\": \"The input token count exceeds the maximum number of tokens allowed 1048576.\", \"status\": \"INVALID_ARGUMENT\" } }",
+              "images": 1024,
+              "model": "gemini-3.5-flash-lite"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "gemini-tok",
+          "rows": 16,
+          "files": [
+            "probe_round5_gemini-tok.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42515722,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 1097, \"totalTokenCount\": 1097, \"promptTokensDetails\": [ { \"modality\": \"IMA...",
+            "images": 1,
+            "model": "gemini-3.5-flash-lite"
+          },
+          "most_images_accepted": {
+            "body_bytes": 39815573,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 1034558, \"totalTokenCount\": 1034558, \"promptTokensDetails\": [ { \"modality\"...",
+            "images": 950,
+            "model": "gemini-3.5-flash-lite"
+          },
+          "walls": {},
+          "non_wall_failures": {
+            "rate_limit": 2
+          }
+        },
+        {
+          "source_id": "gemini_high",
+          "rows": 2,
+          "files": [
+            "probe_round5_squeeze.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 340234555,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 69704, \"totalTokenCount\": 69704, \"promptTokensDetails\": [ { \"modality\": \"I...",
+            "images": 64
+          },
+          "most_images_accepted": {
+            "body_bytes": 340234555,
+            "status": 200,
+            "class": "ok",
+            "error": "{ \"candidates\": [ { \"content\": { \"parts\": [ { \"text\": \"\" } ], \"role\": \"model\" }, \"finishReason\": \"MAX_TOKENS\", \"index\": 0 } ], \"usageMetadata\": { \"promptTokenCount\": 69704, \"totalTokenCount\": 69704, \"promptTokensDetails\": [ { \"modality\": \"I...",
+            "images": 64
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        }
+      ]
+    },
+    {
+      "id": "fireworks",
+      "provider": "Fireworks AI",
+      "host": "api.fireworks.ai",
+      "wire": "openai",
+      "model_tested": "accounts/fireworks/models/kimi-k2p6",
+      "measured_at": "2026-09-19",
+      "binding_constraint": "images_per_request",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": 60,
+        "max_items_evidence": "60 images x 1 MiB accepted (80,168,259 B body); 61 rejected with 400 'Too many images were provided, we currently limit the number of images per conversation to 60'"
+      },
+      "documented": {
+        "current": {
+          "text": "30 images maximum per request; the total base64-encoded images must be less than 10MB.",
+          "url": "https://docs.fireworks.ai/guides/querying-vision-language-models",
+          "retrieved": "2026-09-19"
+        },
+        "archived": [
+          {
+            "text": "whole request limited to 10 MB",
+            "url": "docs.fireworks.ai (2025-01-24 revision)",
+            "captured": "2025-01-24",
+            "note": "from docs sweep; re-verify before quoting"
+          }
+        ],
+        "delta": "Enforced count is 60, documented 30 (2x). Bytes: 304.1 MiB (318,855,849 B, 30 x 8 MiB) accepted against a documented 'less than 10MB' for base64 images. Count cap binds first, so the byte wall is unreachable through this endpoint."
+      },
+      "notes": "The 60-image rejection string is already public: browser-use/browsercode#127 (merged 2026-07-30). Non-conformance is with the vendor's own docs.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 318855849,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"chatcmpl-b8065b3dd5ac45ac9c7b8c2e5880be1b\",\"object\":\"chat.completion\",\"created\":1789524449,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+          "images": 30,
+          "model": "accounts/fireworks/models/kimi-k2p6"
+        },
+        "walls": {
+          "item_count": {
+            "status": 400,
+            "class": "item_count_cap",
+            "error": "{\"error\":{\"object\":\"error\",\"type\":\"invalid_request_error\",\"code\":\"invalid_request_error\",\"message\":\"Too many images were provided, we currently limit the number of images per conversation to 60\"}}",
+            "images": 61,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "fireworks",
+          "rows": 32,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 318855849,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-b8065b3dd5ac45ac9c7b8c2e5880be1b\",\"object\":\"chat.completion\",\"created\":1789524449,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 30,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "most_images_accepted": {
+            "body_bytes": 318855849,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-b8065b3dd5ac45ac9c7b8c2e5880be1b\",\"object\":\"chat.completion\",\"created\":1789524449,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 30,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "walls": {},
+          "non_wall_failures": {
+            "client_error": 1
+          }
+        },
+        {
+          "source_id": "fireworks-60",
+          "rows": 15,
+          "files": [
+            "probe_round5_fireworks-60.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 80168259,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-2020b6cfccc24fa9b79ddccb0a37d68a\",\"object\":\"chat.completion\",\"created\":1789808919,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 60,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "most_images_accepted": {
+            "body_bytes": 80168259,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-2020b6cfccc24fa9b79ddccb0a37d68a\",\"object\":\"chat.completion\",\"created\":1789808919,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 60,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "walls": {
+            "item_count_cap": {
+              "status": 400,
+              "class": "item_count_cap",
+              "error": "{\"error\":{\"object\":\"error\",\"type\":\"invalid_request_error\",\"code\":\"invalid_request_error\",\"message\":\"Too many images were provided, we currently limit the number of images per conversation to 60\"}}",
+              "images": 61,
+              "model": "accounts/fireworks/models/kimi-k2p6"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "fireworks-60big",
+          "rows": 11,
+          "files": [
+            "probe_round5_fireworks-60big.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42513002,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-269fd85c8388439dbc9937cf5bdce979\",\"object\":\"chat.completion\",\"created\":1789809097,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 1,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "most_images_accepted": {
+            "body_bytes": 82454,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-a7050847eb574121b6ff829a1f02563f\",\"object\":\"chat.completion\",\"created\":1789808964,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 1,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "walls": {},
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "fireworks-count",
+          "rows": 13,
+          "files": [
+            "probe_round5_fireworks-count.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42514206,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-6e4a535268404378b6ac29fc3fd03601\",\"object\":\"chat.completion\",\"created\":1789808379,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 1,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "most_images_accepted": {
+            "body_bytes": 82754,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-43ded3de1507487a8ae8c769eeb7fee7\",\"object\":\"chat.completion\",\"created\":1789808154,\"model\":\"accounts/fireworks/models/kimi-k2p6\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\",\"tool...",
+            "images": 1,
+            "model": "accounts/fireworks/models/kimi-k2p6"
+          },
+          "walls": {
+            "item_count_cap": {
+              "status": 400,
+              "class": "item_count_cap",
+              "error": "{\"error\":{\"object\":\"error\",\"type\":\"invalid_request_error\",\"code\":\"invalid_request_error\",\"message\":\"Too many images were provided, we currently limit the number of images per conversation to 60\"}}",
+              "images": 512,
+              "model": "accounts/fireworks/models/kimi-k2p6"
+            }
+          },
+          "non_wall_failures": {
+            "client_error": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic",
+      "provider": "Anthropic",
+      "host": "api.anthropic.com",
+      "wire": "anthropic",
+      "model_tested": "claude-haiku-4-5-20251001",
+      "measured_at": "2026-09-16",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": 33554432,
+        "per_item_bytes": 10485760,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "Request size: 32 MB for the Messages API (256 MB Batches, 500 MB Files). Per image: 10 MB base64 on the direct API (5 MB on Amazon Bedrock and Google Cloud).",
+          "url": "https://platform.claude.com/docs/en/api/errors",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "None - the live docs and the measurement agree exactly (32 MiB body, 10 MiB per image). Row included as a control, not as a divergence."
+      },
+      "notes": "An earlier circulating '5 MB per image' figure is the Bedrock/Vertex/consumer-app number, not the direct API. Rejection is 413 request_too_large.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 33452885,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_011Cf7D9bxTcdYYJoqqEDDin\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"ok\"}],\"container\":null,\"stop_reason\":\"max_tokens\",\"stop_sequence\":null,\"stop_details\":null,\"usage...",
+          "images": 6,
+          "model": "claude-haiku-4-5-20251001"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 33571037,
+            "status": 413,
+            "class": "body_cap",
+            "error": "{ \"error\": { \"type\": \"request_too_large\", \"message\": \"Request exceeds the maximum size\" } }",
+            "images": 6,
+            "model": "claude-haiku-4-5-20251001"
+          },
+          "item_bytes": {
+            "body_bytes": 10587865,
+            "status": 400,
+            "class": "item_bytes_cap",
+            "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"messages.0.content.1.image.source.base64: image exceeds 10 MB maximum: 10587636 bytes > 10485760 bytes\"},\"request_id\":\"req_011Cf7D6fzxJvFk8ZxxgU5dw\"}",
+            "model": "claude-haiku-4-5-20251001"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "anthropic",
+          "rows": 22,
+          "files": [
+            "probe_round5_anthropic.jsonl",
+            "probe_round5_anthropic_refine.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 33452885,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_011Cf7D9bxTcdYYJoqqEDDin\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"ok\"}],\"container\":null,\"stop_reason\":\"max_tokens\",\"stop_sequence\":null,\"stop_details\":null,\"usage...",
+            "images": 6,
+            "model": "claude-haiku-4-5-20251001"
+          },
+          "most_images_accepted": {
+            "body_bytes": 31849805,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_011Cf7Czzaz2sMfM316wBCaZ\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"ok\"}],\"container\":null,\"stop_reason\":\"max_tokens\",\"stop_sequence\":null,\"stop_details\":null,\"usage...",
+            "images": 6,
+            "model": "claude-haiku-4-5-20251001"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 33571037,
+              "status": 413,
+              "class": "body_cap",
+              "error": "{ \"error\": { \"type\": \"request_too_large\", \"message\": \"Request exceeds the maximum size\" } }",
+              "images": 6,
+              "model": "claude-haiku-4-5-20251001"
+            },
+            "item_bytes_cap": {
+              "body_bytes": 10587865,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"messages.0.content.1.image.source.base64: image exceeds 10 MB maximum: 10587636 bytes > 10485760 bytes\"},\"request_id\":\"req_011Cf7D6fzxJvFk8ZxxgU5dw\"}",
+              "model": "claude-haiku-4-5-20251001"
+            }
+          },
+          "non_wall_failures": {}
+        }
+      ]
+    },
+    {
+      "id": "deepseek",
+      "provider": "DeepSeek",
+      "host": "api.deepseek.com",
+      "wire": "openai",
+      "model_tested": "deepseek-flash",
+      "measured_at": "2026-09-16",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": 50331648,
+        "per_item_bytes": 33554432,
+        "max_items": 600,
+        "max_items_source": "vendor docs; not laddered in this dataset"
+      },
+      "documented": {
+        "current": {
+          "text": "Request body 48 MiB; image file size limit 32 MB; up to 600 images.",
+          "url": "https://api-docs.deepseek.com/guides/vision",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "None found - measurement matches the documented figures exactly on both axes (48 MiB body, 32 MiB per image). Row included as a control."
+      },
+      "notes": "413 from openresty: 'Failed to buffer the request body: length limit exceeded'. Vision is live on the direct API although /models lists no vision id.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 42512201,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"740f76e4-6712-4b41-a3b3-9baf253459b2\",\"object\":\"chat.completion\",\"created\":1789565796,\"model\":\"deepseek-flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\"},\"logprobs\":null,\"finish_reason...",
+          "images": 1,
+          "model": "deepseek-flash"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 50353869,
+            "status": 413,
+            "class": "body_cap",
+            "error": "Failed to buffer the request body: length limit exceeded",
+            "images": 9
+          },
+          "item_bytes": {
+            "body_bytes": 44739581,
+            "status": 400,
+            "class": "item_bytes_cap",
+            "error": "{\"error\":{\"message\":\".messages[0].image[0]: image file size exceeds limit 32 MB\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+            "cap_stated_in_error": 33554432
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "deepseek",
+          "rows": 16,
+          "files": [
+            "probe_round5_deepseek.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42512201,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"740f76e4-6712-4b41-a3b3-9baf253459b2\",\"object\":\"chat.completion\",\"created\":1789565796,\"model\":\"deepseek-flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\"},\"logprobs\":null,\"finish_reason...",
+            "images": 1,
+            "model": "deepseek-flash"
+          },
+          "most_images_accepted": {
+            "body_bytes": 42470690,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"635eab11-b581-4597-a5ff-c8ae9b52c5d1\",\"object\":\"chat.completion\",\"created\":1789565830,\"model\":\"deepseek-flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"We\"},\"logprobs\":null,\"finish_reason\"...",
+            "images": 8,
+            "model": "deepseek-flash"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 63807102,
+              "status": 413,
+              "class": "body_cap",
+              "error": "<html> <head><title>413 Request Entity Too Large</title></head> <body> <center><h1>413 Request Entity Too Large</h1></center> <hr><center>openresty</center> </body> </html>",
+              "images": 12,
+              "model": "deepseek-flash"
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "deepseek_single",
+          "rows": 1,
+          "files": [
+            "probe_round5_squeeze.jsonl"
+          ],
+          "largest_accepted": null,
+          "most_images_accepted": null,
+          "walls": {
+            "item_bytes_cap": {
+              "body_bytes": 44739581,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"error\":{\"message\":\".messages[0].image[0]: image file size exceeds limit 32 MB\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+              "cap_stated_in_error": 33554432
+            }
+          },
+          "non_wall_failures": {}
+        },
+        {
+          "source_id": "deepseek_multi",
+          "rows": 1,
+          "files": [
+            "probe_round5_squeeze.jsonl"
+          ],
+          "largest_accepted": null,
+          "most_images_accepted": null,
+          "walls": {
+            "body_cap": {
+              "body_bytes": 50353869,
+              "status": 413,
+              "class": "body_cap",
+              "error": "Failed to buffer the request body: length limit exceeded",
+              "images": 9
+            }
+          },
+          "non_wall_failures": {}
+        }
+      ]
+    },
+    {
+      "id": "zai",
+      "provider": "Z.ai (GLM)",
+      "host": "api.z.ai",
+      "wire": "openai",
+      "model_tested": "glm-4.5v",
+      "measured_at": "2026-09-16",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No numeric request-size figure located on the vendor's error-code page.",
+          "url": "https://docs.z.ai/api-reference/api-code",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "The rejection is code 1214 with the size placeholder left uninterpolated: 'Request size exceeds the limit of {0}' - the vendor never states the number. Measured bracket 192.6 - 223.0 MiB."
+      },
+      "notes": "Wording ('exceeds the limit') matches the pattern clients use to detect context overflow, so an oversize body here can be misclassified as a token problem. No CDN in front (Alibaba Cloud IPs).",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 201954077,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"\",\"reasoning_content\":\"The\",\"role\":\"assistant\"}}],\"created\":1789522788,\"id\":\"20260916093833195ec722280f49d7\",\"model\":\"glm-4.5v\",\"object\":\"chat.completion\",\"request_id\":\"2...",
+          "images": 19,
+          "model": "glm-4.5v"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 233821302,
+            "status": 400,
+            "class": "body_cap",
+            "error": "{\"code\":1214,\"msg\":\"Request size exceeds the limit of {0}\",\"success\":false}",
+            "images": 22,
+            "model": "glm-4.5v"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "zai",
+          "rows": 20,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 201954077,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"\",\"reasoning_content\":\"The\",\"role\":\"assistant\"}}],\"created\":1789522788,\"id\":\"20260916093833195ec722280f49d7\",\"model\":\"glm-4.5v\",\"object\":\"chat.completion\",\"request_id\":\"2...",
+            "images": 19,
+            "model": "glm-4.5v"
+          },
+          "most_images_accepted": {
+            "body_bytes": 201954077,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"content\":\"\",\"reasoning_content\":\"The\",\"role\":\"assistant\"}}],\"created\":1789522788,\"id\":\"20260916093833195ec722280f49d7\",\"model\":\"glm-4.5v\",\"object\":\"chat.completion\",\"request_id\":\"2...",
+            "images": 19,
+            "model": "glm-4.5v"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 233821302,
+              "status": 400,
+              "class": "body_cap",
+              "error": "{\"code\":1214,\"msg\":\"Request size exceeds the limit of {0}\",\"success\":false}",
+              "images": 22,
+              "model": "glm-4.5v"
+            }
+          },
+          "non_wall_failures": {}
+        }
+      ]
+    },
+    {
+      "id": "kimi-coding",
+      "provider": "Moonshot AI (Kimi)",
+      "host": "api.moonshot.ai",
+      "wire": "openai",
+      "model_tested": "kimi-k3",
+      "measured_at": "2026-09-15",
+      "binding_constraint": "edge_body_bytes",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "100 MB request body (vision guide).",
+          "url": "https://platform.moonshot.ai/docs/guide/use-kimi-vision-model",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "141.9 MiB accepted against a documented 100 MB ceiling. The first failure is a bare nginx 413 from the Cloudflare edge (cf-ray present, sub-second reply), so the wall measured here is the CDN tier, not necessarily the origin."
+      },
+      "notes": "RPM 3 on this key - space the rungs. Live model id kimi-k3 (kimi-k2-turbo-preview 404s).",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 148808301,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"chatcmpl-6aa9f1f515d595c81b2dce73\",\"object\":\"chat.completion\",\"created\":1789522439,\"model\":\"kimi-k3\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\"},\"finish_reason\":\"length\"}],\"usage\":{\"pro...",
+          "images": 14,
+          "model": "kimi-k3"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 159405776,
+            "status": 413,
+            "class": "body_cap",
+            "error": "<html> <head><title>413 Request Entity Too Large</title></head> <body> <center><h1>413 Request Entity Too Large</h1></center> <hr><center>nginx</center> </body> </html>",
+            "images": 15,
+            "model": "kimi-k3"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "kimi-coding",
+          "rows": 24,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 148808301,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-6aa9f1f515d595c81b2dce73\",\"object\":\"chat.completion\",\"created\":1789522439,\"model\":\"kimi-k3\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\"},\"finish_reason\":\"length\"}],\"usage\":{\"pro...",
+            "images": 14,
+            "model": "kimi-k3"
+          },
+          "most_images_accepted": {
+            "body_bytes": 148808301,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-6aa9f1f515d595c81b2dce73\",\"object\":\"chat.completion\",\"created\":1789522439,\"model\":\"kimi-k3\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\",\"reasoning_content\":\"The\"},\"finish_reason\":\"length\"}],\"usage\":{\"pro...",
+            "images": 14,
+            "model": "kimi-k3"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 159405776,
+              "status": 413,
+              "class": "body_cap",
+              "error": "<html> <head><title>413 Request Entity Too Large</title></head> <body> <center><h1>413 Request Entity Too Large</h1></center> <hr><center>nginx</center> </body> </html>",
+              "images": 15,
+              "model": "kimi-k3"
+            }
+          },
+          "non_wall_failures": {
+            "rate_limit": 3,
+            "read_timeout": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "minimax",
+      "provider": "MiniMax",
+      "host": "api.minimax.io",
+      "wire": "anthropic",
+      "model_tested": "MiniMax-M3",
+      "measured_at": "2026-09-15",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": 134217728,
+        "per_item_bytes": 10485760,
+        "max_items": null,
+        "max_items_evidence": "no image-count cap found to 256 images"
+      },
+      "documented": {
+        "current": {
+          "text": "No numeric body-cap figure located; error-code page lists the 413 wording only.",
+          "url": "https://platform.minimax.io/docs/api-reference/errorcode",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Exact cap measured: 413 'request body too large: 169366662 bytes exceeds limit of 134217728 bytes' = 128 MiB. Per-image 10 MiB exact. Neither number is published."
+      },
+      "notes": "Probed over the Anthropic-compatible wire. A PAYG (sk-api-) key returns 402 insufficient balance; the subscription key works.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 126880646,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"06f858911b50f475f9041041aa7a6bce\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"MiniMax-M3\",\"content\":[{\"text\":\"ok\",\"type\":\"text\"}],\"usage\":{\"input_tokens\":161898,\"output_tokens\":1,\"cache_creation_input_tokens\":0,\"cache_read_input_tok...",
+          "images": 192,
+          "model": "MiniMax-M3"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 169366662,
+            "status": 413,
+            "class": "body_cap",
+            "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"request body too large: 169366662 bytes exceeds limit of 134217728 bytes\"},\"request_id\":\"06f858ba2a66f512e91765e124737d4e\"}",
+            "cap_stated_in_error": 134217728,
+            "images": 256,
+            "model": "MiniMax-M3"
+          },
+          "item_bytes": {
+            "body_bytes": 21245198,
+            "status": 400,
+            "class": "item_bytes_cap",
+            "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"media exceeds size limit: max 10485760 bytes (2013)\"},\"request_id\":\"06f857e728dd59dac836212c2ed6384c\"}",
+            "cap_stated_in_error": 10485760,
+            "model": "MiniMax-M3"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "minimax",
+          "rows": 32,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 126880646,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"06f858911b50f475f9041041aa7a6bce\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"MiniMax-M3\",\"content\":[{\"text\":\"ok\",\"type\":\"text\"}],\"usage\":{\"input_tokens\":161898,\"output_tokens\":1,\"cache_creation_input_tokens\":0,\"cache_read_input_tok...",
+            "images": 192,
+            "model": "MiniMax-M3"
+          },
+          "most_images_accepted": {
+            "body_bytes": 126880646,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"06f858911b50f475f9041041aa7a6bce\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"MiniMax-M3\",\"content\":[{\"text\":\"ok\",\"type\":\"text\"}],\"usage\":{\"input_tokens\":161898,\"output_tokens\":1,\"cache_creation_input_tokens\":0,\"cache_read_input_tok...",
+            "images": 192,
+            "model": "MiniMax-M3"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 169366662,
+              "status": 413,
+              "class": "body_cap",
+              "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"request body too large: 169366662 bytes exceeds limit of 134217728 bytes\"},\"request_id\":\"06f858ba2a66f512e91765e124737d4e\"}",
+              "cap_stated_in_error": 134217728,
+              "images": 256,
+              "model": "MiniMax-M3"
+            },
+            "item_bytes_cap": {
+              "body_bytes": 21245198,
+              "status": 400,
+              "class": "item_bytes_cap",
+              "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"media exceeds size limit: max 10485760 bytes (2013)\"},\"request_id\":\"06f857e728dd59dac836212c2ed6384c\"}",
+              "cap_stated_in_error": 10485760,
+              "model": "MiniMax-M3"
+            }
+          },
+          "non_wall_failures": {
+            "auth": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "deepinfra",
+      "provider": "DeepInfra",
+      "host": "api.deepinfra.com",
+      "wire": "openai",
+      "model_tested": "Inkling-Small",
+      "measured_at": "2026-09-16",
+      "binding_constraint": "images_per_request",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": 8,
+        "max_items_evidence": "400 'Too many images in request: 11 > 8'"
+      },
+      "documented": {
+        "current": {
+          "text": "No numeric request-size figure located; rate-limit page documents concurrency only.",
+          "url": "https://docs.deepinfra.com/account/rate-limits",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Count cap 8 binds before any byte cap (64.5 MiB accepted with a single image). At 8 large images the backend fails at the gRPC layer instead: 500 StatusCode.RESOURCE_EXHAUSTED at 202.8 MiB and 324.4 MiB - an oversize condition surfacing as a server error."
+      },
+      "notes": "Served by uvicorn, no CDN. The 500 is the interesting part: a client retrying 5xx will loop on a request that can never succeed.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 67615733,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"service_tier\":\"default\",\"id\":\"chatcmpl-Re5Wp3lm9s6E1izESUvlpj3Y\",\"object\":\"chat.completion\",\"created\":1789453142,\"model\":\"thinkingmachines/Inkling-Small\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\"",
+          "model": "thinkingmachines/Inkling-Small"
+        },
+        "walls": {
+          "item_count": {
+            "status": 400,
+            "class": "item_count_cap",
+            "error": "{\"error\":{\"message\":\"Too many images in request: 11 > 8\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}",
+            "cap_stated_in_error": 8,
+            "images": 11,
+            "model": "thinkingmachines/Inkling-Small"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "deepinfra",
+          "rows": 32,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 67615733,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"service_tier\":\"default\",\"id\":\"chatcmpl-Re5Wp3lm9s6E1izESUvlpj3Y\",\"object\":\"chat.completion\",\"created\":1789453142,\"model\":\"thinkingmachines/Inkling-Small\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\"",
+            "model": "thinkingmachines/Inkling-Small"
+          },
+          "most_images_accepted": {
+            "body_bytes": 128,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"service_tier\":\"default\",\"id\":\"chatcmpl-RFZ81d2OOURP40zjxJDXeDTi\",\"object\":\"chat.completion\",\"created\":1789452427,\"model\":\"deepseek-ai/DeepSeek-V4-Flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok",
+            "images": 0,
+            "model": "deepseek-ai/DeepSeek-V4-Flash"
+          },
+          "walls": {
+            "item_count_cap": {
+              "status": 400,
+              "class": "item_count_cap",
+              "error": "{\"error\":{\"message\":\"Too many images in request: 11 > 8\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}",
+              "cap_stated_in_error": 8,
+              "images": 11,
+              "model": "thinkingmachines/Inkling-Small"
+            }
+          },
+          "non_wall_failures": {
+            "capability": 1,
+            "http_500": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "novita",
+      "provider": "Novita AI",
+      "host": "api.novita.ai",
+      "wire": "openai",
+      "model_tested": "qwen3-vl-235b",
+      "measured_at": "2026-09-16",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "Error catalogue lists INVALID_REQUEST_BODY and IMAGE_FILE_EXCEEDS_MAX_SIZE without numeric ceilings.",
+          "url": "https://novita.ai/docs/api-reference/basic-error-code",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Rejection text states 'must be less than 20MB' while 50.7 MiB (53,141,331 B) was accepted - the stated figure is stale by more than 2.5x. Bracket 50.7 - 91.2 MiB."
+      },
+      "notes": "Cloudflare-fronted. Origin is slow: 199 s to answer a 50 MiB body - latency, not rejection; use a long client timeout or the wall looks smaller than it is.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 53141331,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"c16d0c474291d6bc1fe0ed8f32f4e815\",\"object\":\"chat.completion\",\"created\":1789525342,\"model\":\"qwen/qwen3-vl-235b-a22b-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\"},\"finish_reason\":\"length\"}],\"usage\":{\"pro...",
+          "images": 5,
+          "model": "qwen/qwen3-vl-235b-a22b-instruct"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 95643543,
+            "status": 400,
+            "class": "body_cap",
+            "error": "{\"code\":400,\"reason\":\"INVALID_REQUEST_BODY\",\"message\":\"request body too large, must be less than 20MB\",\"metadata\":{}}",
+            "images": 9,
+            "model": "qwen/qwen3-vl-235b-a22b-instruct"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "novita",
+          "rows": 18,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 53141331,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"c16d0c474291d6bc1fe0ed8f32f4e815\",\"object\":\"chat.completion\",\"created\":1789525342,\"model\":\"qwen/qwen3-vl-235b-a22b-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\"},\"finish_reason\":\"length\"}],\"usage\":{\"pro...",
+            "images": 5,
+            "model": "qwen/qwen3-vl-235b-a22b-instruct"
+          },
+          "most_images_accepted": {
+            "body_bytes": 53141331,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"c16d0c474291d6bc1fe0ed8f32f4e815\",\"object\":\"chat.completion\",\"created\":1789525342,\"model\":\"qwen/qwen3-vl-235b-a22b-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\"},\"finish_reason\":\"length\"}],\"usage\":{\"pro...",
+            "images": 5,
+            "model": "qwen/qwen3-vl-235b-a22b-instruct"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 95643543,
+              "status": 400,
+              "class": "body_cap",
+              "error": "{\"code\":400,\"reason\":\"INVALID_REQUEST_BODY\",\"message\":\"request body too large, must be less than 20MB\",\"metadata\":{}}",
+              "images": 9,
+              "model": "qwen/qwen3-vl-235b-a22b-instruct"
+            }
+          },
+          "non_wall_failures": {
+            "client_error": 1,
+            "read_timeout": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "nvidia",
+      "provider": "NVIDIA NIM (integrate.api.nvidia.com)",
+      "host": "integrate.api.nvidia.com",
+      "wire": "openai",
+      "model_tested": "meta/llama-3.2-11b-vision-instruct",
+      "measured_at": "2026-09-15",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": 26214400,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No numeric request-size figure located in the API reference.",
+          "url": "https://docs.nvidia.com/nim/large-language-models/latest/reference/api-reference.html",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Hard cap 25 MiB (26,214,400 B) inferred from the rejection text about the Assets API, with 16.9 MiB accepted and 31.9 MiB rejected. The number appears in the error, not in the docs."
+      },
+      "notes": "The same 25 MiB string is quoted in NousResearch/hermes-agent#112473 - that is this project's own prior slice, not independent prior art.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 16906577,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"chatcmpl-8a4463f5d2ca44ae8afc0b24834934ac\",\"object\":\"chat.completion\",\"created\":1789452927,\"model\":\"meta/llama-3.2-11b-vision-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\",\"refusal\":",
+          "model": "meta/llama-3.2-11b-vision-instruct"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 31881685,
+            "status": 400,
+            "class": "body_cap",
+            "error": "{\"error\":{\"message\":\"Please make sure your payload is below 26214400 bytes in size. If larger assets are required please refer to our Assets API.\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_image_format\"",
+            "cap_stated_in_error": 26214400,
+            "model": "meta/llama-3.2-11b-vision-instruct"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "nvidia",
+          "rows": 16,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 16906577,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-8a4463f5d2ca44ae8afc0b24834934ac\",\"object\":\"chat.completion\",\"created\":1789452927,\"model\":\"meta/llama-3.2-11b-vision-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\",\"refusal\":",
+            "model": "meta/llama-3.2-11b-vision-instruct"
+          },
+          "most_images_accepted": {
+            "body_bytes": 133,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-d6c965adae60417caf53937705416546\",\"object\":\"chat.completion\",\"created\":1789452894,\"model\":\"meta/llama-3.2-11b-vision-instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\",\"refusal\":",
+            "images": 0,
+            "model": "meta/llama-3.2-11b-vision-instruct"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 31881685,
+              "status": 400,
+              "class": "body_cap",
+              "error": "{\"error\":{\"message\":\"Please make sure your payload is below 26214400 bytes in size. If larger assets are required please refer to our Assets API.\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_image_format\"",
+              "cap_stated_in_error": 26214400,
+              "model": "meta/llama-3.2-11b-vision-instruct"
+            }
+          },
+          "non_wall_failures": {
+            "client_error": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "ollama-cloud",
+      "provider": "Ollama Cloud",
+      "host": "ollama.com",
+      "wire": "openai",
+      "model_tested": "gemma4:31b",
+      "measured_at": "2026-09-15",
+      "binding_constraint": "body_bytes",
+      "caps": {
+        "body_bytes": 16777216,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No numeric payload figure located; the pricing page documents plan tiers only.",
+          "url": "https://ollama.com/pricing",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Wall bracketed to exactly 16 MiB (16,721,049 B accepted / 17,251,293 B rejected), 400 'failed to read request body' - not a 413."
+      },
+      "notes": "The measured 16 MiB coincides with a common framework default request-body guard, so the wall may be infrastructure rather than a published product limit.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 16721049,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"chatcmpl-869\",\"object\":\"chat.completion\",\"created\":1789475820,\"model\":\"gemma4:31b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\"},\"finish_reason\":\"length\"}],\"usage\":{\"prompt_token...",
+          "model": "gemma4:31b"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 17251293,
+            "status": 400,
+            "class": "body_cap",
+            "error": "{\"error\":{\"message\":\"failed to read request body (ref: 13ee9be4-97b8-4fdd-97bf-b9429f3bfb21)\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}",
+            "model": "gemma4:31b"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "ollama-cloud",
+          "rows": 16,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 16721049,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-869\",\"object\":\"chat.completion\",\"created\":1789475820,\"model\":\"gemma4:31b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"ok\"},\"finish_reason\":\"length\"}],\"usage\":{\"prompt_token...",
+            "model": "gemma4:31b"
+          },
+          "most_images_accepted": {
+            "body_bytes": 110,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-557\",\"object\":\"chat.completion\",\"created\":1789474648,\"model\":\"gpt-oss:20b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\"},\"finish_reason\":\"length\"}],\"us",
+            "images": 0,
+            "model": "gpt-oss:20b"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 17251293,
+              "status": 400,
+              "class": "body_cap",
+              "error": "{\"error\":{\"message\":\"failed to read request body (ref: 13ee9be4-97b8-4fdd-97bf-b9429f3bfb21)\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null}}",
+              "model": "gemma4:31b"
+            }
+          },
+          "non_wall_failures": {}
+        }
+      ]
+    },
+    {
+      "id": "gmi",
+      "provider": "GMI Cloud",
+      "host": "api.gmi-serving.com",
+      "wire": "openai",
+      "model_tested": "gemini-3.5-flash",
+      "measured_at": "2026-09-16",
+      "binding_constraint": "edge_body_bytes",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "Rate-limit page documents RPM/TPM and concurrency, no body ceiling.",
+          "url": "https://docs.gmicloud.ai/inference-engine/api-reference/rate-limit",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Cloudflare 503 page at 91.2 MiB, 413 at 101.4 MiB - consistent with a 100 MB CDN tier in front of the origin, not with an origin cap. Floor established at 40.5 MiB."
+      },
+      "notes": "Ambiguous row: the first failure is plausibly the CDN, so the origin ceiling is unestablished above 40.5 MiB.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 42518826,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"fDqpaujVLKKgpucPlLTZ2AY\",\"object\":\"chat.completion\",\"created\":1789475452,\"model\":\"google/gemini-3.5-flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":null},\"finish_reason\":\"length\"}],\"usage\":{\"c",
+          "model": "google/gemini-3.5-flash"
+        },
+        "walls": {
+          "body": {
+            "body_bytes": 106285377,
+            "status": 413,
+            "class": "body_cap",
+            "error": "<html> <head><title>413 Request Entity Too Large</title></head> <body> <center><h1>413 Request Entity Too Large</h1></center> <hr><center>nginx</center> </body> </html>",
+            "images": 10,
+            "model": "google/gemini-3.5-flash"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "source_id": "gmi",
+          "rows": 18,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 42518826,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"fDqpaujVLKKgpucPlLTZ2AY\",\"object\":\"chat.completion\",\"created\":1789475452,\"model\":\"google/gemini-3.5-flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":null},\"finish_reason\":\"length\"}],\"usage\":{\"c",
+            "model": "google/gemini-3.5-flash"
+          },
+          "most_images_accepted": {
+            "body_bytes": 122,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"XjmpatfxCpaq9LsPzPuTqQQ\",\"object\":\"chat.completion\",\"created\":1789475166,\"model\":\"google/gemini-3.5-flash\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":null},\"finish_reason\":\"length\"}],\"usage\":{\"c",
+            "images": 0,
+            "model": "google/gemini-3.5-flash"
+          },
+          "walls": {
+            "body_cap": {
+              "body_bytes": 106285377,
+              "status": 413,
+              "class": "body_cap",
+              "error": "<html> <head><title>413 Request Entity Too Large</title></head> <body> <center><h1>413 Request Entity Too Large</h1></center> <hr><center>nginx</center> </body> </html>",
+              "images": 10,
+              "model": "google/gemini-3.5-flash"
+            }
+          },
+          "non_wall_failures": {
+            "auth": 1,
+            "read_timeout": 1,
+            "proxy": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "nebius-token-factory",
+      "provider": "Nebius Token Factory",
+      "host": "api.tokenfactory.nebius.com",
+      "wire": "openai",
+      "model_tested": "google/gemma-3-27b-it",
+      "measured_at": "2026-09-15",
+      "binding_constraint": "per_item_bytes",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": 10485760,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No numeric payload figure located.",
+          "url": null,
+          "retrieved": "2026-09-19"
+        },
+        "delta": "No body cap found to 106.3 MiB (16 x 5 MiB, 106,228,993 B). Per-image wall bracketed at 10 MiB (9.98 MiB accepted / 10.23 MiB rejected)."
+      },
+      "notes": "An oversize image returns HTTP 400 with a pydantic message - 'Input should be a valid string' on messages[0].content - not a 413, so 413-keyed recovery never fires here.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 106228993,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"chatcmpl-10de32f3-53f9-4453-b1fd-08307bac5a0b\",\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"logprobs\":null,\"message\":{\"content\":\"ok\",\"refusal\":null,\"role\":\"assistant\",\"annotations\":null,\"audio\":null,\"function_call\":null,\"tool_call...",
+          "model": "google/gemma-3-27b-it"
+        },
+        "walls": {}
+      },
+      "evidence": [
+        {
+          "source_id": "nebius-token-factory",
+          "rows": 25,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 106228993,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-10de32f3-53f9-4453-b1fd-08307bac5a0b\",\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"logprobs\":null,\"message\":{\"content\":\"ok\",\"refusal\":null,\"role\":\"assistant\",\"annotations\":null,\"audio\":null,\"function_call\":null,\"tool_call...",
+            "model": "google/gemma-3-27b-it"
+          },
+          "most_images_accepted": {
+            "body_bytes": 125,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"chatcmpl-eea7f0e7-2e45-46a7-a0b9-7b4e6cca44ed\",\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"logprobs\":null,\"message\":{\"content\":\"ok\",\"refusal\":null,\"role\":\"assistant\",\"annotations\":null,\"audio\":null,\"function_c",
+            "images": 0,
+            "model": "NousResearch/Hermes-4-405B"
+          },
+          "walls": {},
+          "non_wall_failures": {
+            "client_error": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "upstage",
+      "provider": "Upstage",
+      "host": "api.upstage.ai",
+      "wire": "openai",
+      "model_tested": "solar-pro4",
+      "measured_at": "2026-09-15",
+      "binding_constraint": "capability",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": 0
+      },
+      "documented": {
+        "current": {
+          "text": "Images are handled by separate products (Document Parse / Document OCR / Information Extraction), not by the chat endpoint.",
+          "url": "https://console.upstage.ai/api-keys",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Not a size question: every chat model returns 400 'Image input is not allowed for this model' at 333,757 B. Included so the row is not mistaken for an unmeasured ceiling."
+      },
+      "notes": "No vision on the chat endpoint at all - a capability gap, not a limit.",
+      "confidence": "measured",
+      "measured": {
+        "largest_accepted": {
+          "body_bytes": 109,
+          "status": 200,
+          "class": "ok",
+          "error": "{\"id\":\"69b26cb4-c3de-4d18-99cb-43da8545cd9e\",\"object\":\"chat.completion\",\"created\":1789474647,\"model\":\"solar-pro4-260806\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\\n\\n\"},\"logprobs\":null,\"finish_reaso",
+          "images": 0,
+          "model": "solar-pro4"
+        },
+        "walls": {}
+      },
+      "evidence": [
+        {
+          "source_id": "upstage",
+          "rows": 3,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": {
+            "body_bytes": 109,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"69b26cb4-c3de-4d18-99cb-43da8545cd9e\",\"object\":\"chat.completion\",\"created\":1789474647,\"model\":\"solar-pro4-260806\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\\n\\n\"},\"logprobs\":null,\"finish_reaso",
+            "images": 0,
+            "model": "solar-pro4"
+          },
+          "most_images_accepted": {
+            "body_bytes": 109,
+            "status": 200,
+            "class": "ok",
+            "error": "{\"id\":\"69b26cb4-c3de-4d18-99cb-43da8545cd9e\",\"object\":\"chat.completion\",\"created\":1789474647,\"model\":\"solar-pro4-260806\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"\\n\\n\"},\"logprobs\":null,\"finish_reaso",
+            "images": 0,
+            "model": "solar-pro4"
+          },
+          "walls": {},
+          "non_wall_failures": {
+            "capability": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "xai",
+      "provider": "xAI",
+      "host": "api.x.ai",
+      "wire": "openai",
+      "model_tested": null,
+      "measured_at": null,
+      "binding_constraint": "unknown",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": 20971520,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "Per-image limit 20 MiB documented; Batch API states 25 MB per request. No chat-body ceiling published.",
+          "url": "https://docs.x.ai/docs/guides/chat-completions",
+          "retrieved": "2026-09-19"
+        },
+        "delta": "UNMEASURED in this dataset - no API key on the measuring host (consumer access is OAuth). A separate session observed a 413 'length limit exceeded' at roughly 64 MiB of base64, so the practical ceiling is assumed to be the 25 MB figure and is NOT verified here."
+      },
+      "notes": "Documented-only row. Do not treat the 25 MB as measured.",
+      "confidence": "documented",
+      "measured": {
+        "largest_accepted": null,
+        "walls": {}
+      },
+      "evidence": [
+        {
+          "note": "no probe rows present in data/ for this provider"
+        }
+      ]
+    },
+    {
+      "id": "openai-codex",
+      "provider": "OpenAI Codex backend (ChatGPT)",
+      "host": "chatgpt.com/backend-api/codex",
+      "wire": "openai",
+      "model_tested": null,
+      "measured_at": null,
+      "binding_constraint": "unknown",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No published payload ceiling for this private backend.",
+          "url": null,
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Unmeasured by quota, not by size: every attempt returned 429 usage_limit_reached and the window did not reopen during the measurement campaign."
+      },
+      "notes": "Included to record that the gap is a quota artefact. Note also that this backend silently falls back to a different provider on some client configurations, so a success here must be verified by reading the response's provider field, not the output text.",
+      "confidence": "unmeasured",
+      "measured": {
+        "largest_accepted": null,
+        "walls": {}
+      },
+      "evidence": [
+        {
+          "source_id": "codex_subscription",
+          "rows": 1,
+          "files": [
+            "probe_codex.jsonl"
+          ],
+          "largest_accepted": null,
+          "most_images_accepted": null,
+          "walls": {},
+          "non_wall_failures": {
+            "rate_limit": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "copilot",
+      "provider": "GitHub Copilot API",
+      "host": "api.githubcopilot.com",
+      "wire": "openai",
+      "model_tested": null,
+      "measured_at": null,
+      "binding_constraint": "unknown",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No published payload ceiling.",
+          "url": null,
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Repeated 413 observed on screenshot-heavy sessions but no ladder was run, so no bracket is claimed here."
+      },
+      "notes": "Recorded as an observed-413 row with no measurement. Hermes aliases github-models onto this id, which is a different host and tier.",
+      "confidence": "unmeasured",
+      "measured": {
+        "largest_accepted": null,
+        "walls": {}
+      },
+      "evidence": [
+        {
+          "note": "no probe rows present in data/ for this provider"
+        }
+      ]
+    },
+    {
+      "id": "alibaba-token-plan",
+      "provider": "Alibaba Cloud Model Studio (token-plan endpoint)",
+      "host": "token-plan.ap-southeast-1.maas.aliyuncs.com",
+      "wire": "openai",
+      "model_tested": null,
+      "measured_at": "2026-09-15",
+      "binding_constraint": "unknown",
+      "caps": {
+        "body_bytes": null,
+        "per_item_bytes": null,
+        "max_items": null
+      },
+      "documented": {
+        "current": {
+          "text": "No published payload ceiling for this endpoint variant.",
+          "url": null,
+          "retrieved": "2026-09-19"
+        },
+        "delta": "Not a size finding: this endpoint returned HTTP 401 invalid_request_error for a workspace key that authenticates on dashscope-intl. Recorded so the id is not mistaken for a measured row."
+      },
+      "notes": "Unmeasured. Variant endpoint; the same key 401s here.",
+      "confidence": "unmeasured",
+      "measured": {
+        "largest_accepted": null,
+        "walls": {}
+      },
+      "evidence": [
+        {
+          "source_id": "alibaba-token-plan",
+          "rows": 1,
+          "files": [
+            "probe_results.jsonl"
+          ],
+          "largest_accepted": null,
+          "most_images_accepted": null,
+          "walls": {},
+          "non_wall_failures": {
+            "auth": 1
+          }
+        }
+      ]
+    }
+  ],
+  "unmapped_source_ids": []
+}
