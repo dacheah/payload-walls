@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use these measurements, cite this repository and the date you retrieved it - these numbers rot."
-title: "llm-request-budgets: measured request-size ceilings for LLM APIs"
+title: "payload-walls: measured request-size ceilings for LLM APIs"
 abstract: >-
   Empirical request-size ceilings (JSON body bytes, per-image bytes, images per request, input tokens)
   for 20 LLM API hosts, with each vendor's documented figure quoted next to the measured one. Includes
@@ -10,9 +10,9 @@ authors:
   - family-names: Cheah
     given-names: Dan
     email: contact@danielcheah.com
-repository-code: "https://github.com/dacheah/llm-request-budgets"
+repository-code: "https://github.com/dacheah/payload-walls"
 license: MIT
-license-url: "https://github.com/dacheah/llm-request-budgets/blob/main/LICENSE"
+license-url: "https://github.com/dacheah/payload-walls/blob/main/LICENSE"
 keywords:
   - LLM APIs
   - payload limits

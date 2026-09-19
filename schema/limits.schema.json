@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/dacheah/llm-request-budgets/schema/limits.schema.json",
+  "$id": "https://github.com/dacheah/payload-walls/schema/limits.schema.json",
   "title": "limits.json",
   "description": "Measured request-size ceilings for LLM APIs, with the vendor documentation compared. Measured fields are derived from data/*.jsonl by tools/build_limits.py; documented fields are curated quotes with URLs and retrieval dates.",
   "type": "object",

@@ -1,4 +1,4 @@
-# llm-request-budgets
+# payload-walls
 
 Measured request-size **ceilings** for LLM APIs — the whole body, one image, how many images,
 and the input-token budget — with each vendor's documentation checked against what the API
