@@ -126,5 +126,9 @@ against Hermes by this repo's author. Vendors were not told about, and have not 
 
 ## Licence
 
-Code MIT (`LICENSE`). Data and prose CC BY 4.0 — reuse the tables, keep the attribution and the
-`measured_at` date with them.
+Code MIT (`LICENSE`).
+
+Measurement data and prose — `data/`, `limits.json`, `docs/` — CC BY 4.0
+(`LICENSE-DATA`): reuse the tables, including commercially, keeping the attribution and the
+`measured_at` date with them. The retrieval date is part of the attribution, not a formality —
+these numbers rot.
