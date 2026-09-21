@@ -19,7 +19,8 @@ Why tiny images first: a failure on one huge payload cannot tell you WHICH limit
 per-item, item count, or the model's token budget), and 2 GB costs minutes of upload per attempt.
 A count ladder with 32 KiB images hits the count and token walls in seconds and costs almost nothing.
 
-No third-party dependencies. Data and prose in this repository are CC BY 4.0.
+No third-party dependencies. Data and prose in this repository are CC BY 4.0
+(see LICENSE-DATA).
 """
 from __future__ import annotations
 
